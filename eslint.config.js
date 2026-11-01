@@ -17,6 +17,7 @@ export default tseslint.config(
       'dist/**',
       'out/**',
       'out-ui/**',
+      'out-probe/**',
       'release/**',
       'coverage/**',
       'docs/**',
@@ -27,7 +28,63 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     rules: {
-      'no-restricted-syntax': ['error', ...bannedSyntax],
+      'no-restricted-syntax': [
+        'error',
+        ...bannedSyntax,
+        {
+          selector: 'TSAsExpression[typeAnnotation.typeName.name=/^(Piastres|Milli)$/]',
+          message:
+            'Do not cast to Piastres/Milli; use piastres()/milli() or the money/qty functions.',
+        },
+        {
+          selector: 'TSTypeAssertion[typeAnnotation.typeName.name=/^(Piastres|Milli)$/]',
+          message:
+            'Do not cast to Piastres/Milli; use piastres()/milli() or the money/qty functions.',
+        },
+      ],
+    },
+  },
+  {
+    // The only files allowed to create branded money/quantity values by cast.
+    files: ['src/domain/money.ts', 'src/domain/qty.ts'],
+    rules: { 'no-restricted-syntax': ['error', ...bannedSyntax] },
+  },
+  {
+    // Only the infrastructure, main process and tooling may touch the file system or processes.
+    files: [
+      'src/domain/**/*.ts',
+      'src/application/**/*.ts',
+      'src/shared/**/*.ts',
+      'src/renderer/**/*.{ts,tsx}',
+      'src/preload/**/*.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                'fs',
+                'fs/*',
+                'node:fs',
+                'node:fs/*',
+                'child_process',
+                'node:child_process',
+                'node:worker_threads',
+                'worker_threads',
+                'node:net',
+                'net',
+                'node:http',
+                'node:https',
+                'http',
+                'https',
+              ],
+              message: 'File, process and network access belong in src/infrastructure or src/main.',
+            },
+          ],
+        },
+      ],
     },
   },
   {

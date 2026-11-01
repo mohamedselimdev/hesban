@@ -2,6 +2,20 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W2-01 Week 1 carry-overs (Week 2 started; owner accepted the Week 1 review)
+
+Done (branch `w2-01-carryovers`)
+- Test probes (`selftest`, `uicheck`) are compiled only when `HESBAN_DEV_PROBES=1` (build-time constant `__DEV_PROBES__`). Tests build their own probe variants (`out-probe`, `out-ui`); `out/` is production only. `verify-build` now fails if any probe chunk or probe string is in `out/main` (proved by building a probe variant into `out/`: verifier failed with 4 findings; production build passes).
+- Lint: `child_process`, `fs`, `worker_threads`, `net`, `http(s)` imports banned outside `src/infrastructure`, `src/main` and tooling; casts `as Piastres` / `as Milli` banned outside `money.ts`/`qty.ts`. Proved with a deliberate violation file (3 errors reported, file removed).
+- CI: coverage gate (95% branches/lines/functions/statements on `src/domain`; measured 98.79% branches), real-Electron probe on the probe build, production build, build verifier, **packaged-build verification**.
+- `electron-builder.yml` + `pnpm package:dir` + `tools/verify-packaged.mjs`: unsigned `release/win-unpacked` build with Electron Fuses applied by electron-builder (runAsNode off, node options/inspect off, cookie encryption on, ASAR integrity validation on, only load from ASAR, no file-protocol privileges). Verified on the real packaged `HESBAN.exe`: 0 fuse violations (stock Electron had 7); `app.asar` has 283 entries, none from src/tests/docs/tools/probes; `win32-x64.node` unpacked beside the asar. The packaged app started and stayed alive for 8 seconds (asar integrity accepted).
+
+Tests executed (2026-11-01)
+- scan:secrets, docs:links, lint, typecheck, format OK; `pnpm test` 133 passed; coverage gate pass (98.79% branches); `test:electron` 7 passed; `test:ui` 12 passed; `verify:build -- --fuses` OK; `package:dir` + `verify:packaged` OK. Not yet run on GitHub at time of writing (see PR).
+
+Resolved from the Week 1 review: risk 1 (probes in production bundle), risk 2 (fuses only on a copy), carry-over lint rules, coverage gate.
+Still open: signing (no certificate; packaged build is unsigned), `react`/`react-dom`/`@fontsource/cairo` are runtime `dependencies` although Vite bundles them (they add to the packaged node_modules; move to devDependencies in a later task), installer (NSIS) not built, Windows 10 untested.
+
 ## 2026-11-01 — W1-11 Week 1 review (verdict CONDITIONAL)
 
 Done (branch `w1-11-week1-review`)
