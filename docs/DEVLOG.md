@@ -2,6 +2,24 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-05 Migration runner
+
+Done
+- `src/infrastructure/db/open.ts` (SQLCipher-mode open, strict 64-hex key check before the PRAGMA, handle closed on any failure, key verified at open), `migrations/runner.ts`, `migrations/load.ts` (SQL embedded at build time via `import.meta.glob`), `migrations/sql/0001_init.sql` (`app_meta`, `settings`; `schema_migrations` is created by the runner).
+- Rules: forward-only; versions 1..n without gaps; all pending migrations run in ONE `BEGIN IMMEDIATE` transaction (all-or-nothing); refuses newer-than-app schema, changed checksum (CRLF-normalised) and `user_version` mismatch; `beforeMigrate` backup hook runs only for an existing DB with pending work and aborts everything if it throws (real backup arrives Week 12).
+- `better-sqlite3-multiple-ciphers` 13.0.3 added as runtime dependency (exact pin). `tsconfig.json` maps its types via `paths` because the package `exports` has no `types` entry.
+
+Tests executed
+- `pnpm typecheck`, `pnpm lint`, `pnpm format`: clean. `pnpm test`: 5 files, 65 tests passed (46 earlier + 19 migration integration tests, incl. encrypted DB, wrong key not leaving the file locked, malformed-key rejection, upgrade from every earlier version, rollback, backup-hook abort).
+- Mutation sanity check (manual, reverted): disabling the checksum check fails 1 test; removing the single transaction fails 12 tests.
+- `pnpm build` and `pnpm test:electron` (7 tests) still pass; the Electron main does not use the DB yet.
+
+Not tested / risks
+- Only one migration exists, so "every released version" is simulated with prefixes of synthetic migrations.
+- Migration SQL containing its own BEGIN/COMMIT (other than trigger bodies) would break the single-transaction guarantee; no guard yet.
+- Native module packaging (`asarUnpack`, electron-builder) not tested.
+- Large-database migration time and disk-full behaviour not tested.
+
 ## 2026-11-01 — W1-04 SQLCipher / encryption spike
 
 Done
