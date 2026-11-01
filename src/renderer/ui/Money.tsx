@@ -1,5 +1,5 @@
-import type { DigitStyle } from '../i18n/format';
-import { formatMoney } from '../i18n/format';
+import type { DigitStyle } from '../../shared/format';
+import { formatMoney } from '../../shared/format';
 import type { Piastres } from '../../domain/money';
 
 /** Amount that always reads left-to-right, even inside right-to-left text. */

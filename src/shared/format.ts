@@ -1,6 +1,6 @@
-import { toArabicIndic } from '../../domain/digits';
-import { formatEgp, type DigitStyle, type Piastres } from '../../domain/money';
-import { formatQty, type Milli } from '../../domain/qty';
+import { toArabicIndic } from '../domain/digits';
+import { formatEgp, type DigitStyle, type Piastres } from '../domain/money';
+import { formatQty, type Milli } from '../domain/qty';
 
 export type { DigitStyle };
 

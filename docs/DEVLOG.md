@@ -2,6 +2,27 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-09 Hardware abstractions and mocks (physical testing BLOCKED)
+
+Verified before starting: HEAD `219799a` — CI run 41332245191 completed with conclusion `success`; local `main` and `origin/main` both `219799a74f7c…`; repository is private.
+
+Done (branch `w1-09-hardware-abstractions`)
+- Ports `src/application/ports/hardware.ts` (Printer, CashDrawer, BarcodeScanner, HardwareError with retryable codes; every descriptor carries `isMock` and `verifiedOnPhysicalHardware: false`).
+- Receipt model, plain-text renderer (wraps by grapheme to 32/48 columns, isolates numbers, strips bidi overrides) and HTML renderer (escapes, no script, CSP `default-src 'none'`), `src/application/receipt/`.
+- Scan decoder (physical `code`, inter-key gap, min/max length, terminators, GTIN check) and wedge scanner over a `KeySource`, `src/application/hardware/`.
+- `printReceipt` / `openDrawer` (never throw for hardware faults; retry only TIMEOUT/DEVICE_BUSY; failure leaves the document reprintable).
+- Mocks `src/infrastructure/hardware/mocks.ts`. `docs/hardware-matrix.md`: every device and case BLOCKED; "Supported models: none".
+- Moved `format.ts` to `src/shared/format.ts` so main-process receipt code can use it (imports updated; behaviour unchanged).
+
+Tests executed (2026-11-01)
+- `pnpm typecheck`, `pnpm lint`, `pnpm format`, `pnpm docs:links`, `pnpm scan:secrets` clean. `pnpm test`: 9 files, 116 tests passed (86 + 30 new). `pnpm test:electron` and `pnpm test:ui` rerun after the move; build verifier OK.
+- Two of my own new tests failed on first run because the expectations were wrong (a 10-column line that legitimately fits; a regex that flagged harmless escaped text `onerror=`). Fixed the tests; the code was correct.
+
+Not proven / BLOCKED
+- No real printer, scanner, drawer or retail PC was used. Nothing here shows Arabic shaping, cutting speed, scan timing (35 ms threshold is an assumption) or drawer pulse works on any device.
+- No Electron adapter for the Windows print driver exists yet; HTML output has not been printed.
+- Receipt column widths (32/48) are typical values, not measured.
+
 ## 2026-11-01 — Repository published (private) and first CI runs
 
 Done (owner approved creation and push)
