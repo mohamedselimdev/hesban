@@ -1,6 +1,6 @@
 # HESBAN — Accounting and Inventory Business-Rule Specification
 
-Status: APPROVED WITH CONDITIONS (see [decisions.md](decisions.md)) — **accountant validation required before Week 4; no posting code is written before it**
+Status: APPROVED WITH CONDITIONS (see [decisions.md](decisions.md)) — **accountant validation PENDING (checklist: [accountant-review-checklist.md](accountant-review-checklist.md)); no posting code is written before it**
 Revised: 2026-11-01 · Items marked (Dxx) refer to approved decisions.
 
 This is not tax or legal advice. Accounting treatments below are standard small-business practice; they must be reviewed by the owner (and ideally by an Egyptian accountant) before pilot.
@@ -97,8 +97,8 @@ value' = value − c
 
 ### 5.3 Sales return
 - Must reference an original posted sales invoice line; returned qty cumulatively ≤ original qty.
-- Refund value per line = original net unit value × returned qty, rounded; cumulative refund over all returns of that line never exceeds the original line total (the last return takes the remainder).
-- Stock restored at **original cost**: `restored_cost = round(orig_cogs × q / orig_q)`; last return of the line takes the remaining cogs. Receipt per §4.
+- Refund value per line uses the **cumulative method**: after a return, cumulative refund = `round(orig_net_line × cumulative_returned_qty / orig_qty)`; this return's refund = that value minus the refund already paid on earlier returns of the line. The sum over all returns therefore equals the original net line total exactly once everything is returned, never exceeds it, and does not depend on how the quantity is split (clarified 2026-11-01; the earlier wording "last return takes the remainder" was ambiguous). Needs accountant confirmation.
+- Stock restored at **original cost** by the same cumulative method: `restored_cost = round(orig_cogs × cumulative_returned_qty / orig_qty) − cost already restored`. Receipt per §4.
 - Settlement: first reduce the invoice's outstanding receivable (credit invoices); any remainder is refunded (cash/electronic from the drawer) or left as customer credit if a customer is attached and chosen.
 - Journal: `Dr Sales Returns 4200 (gross line value returned) / Cr Sales Discounts 4150 (discount share of returned qty) / Cr Cash or Receivable (net refund)`; `Dr Inventory / Cr COGS`. Mapping to be confirmed by the accountant.
 - Return without an original posted invoice is not supported (D-12). No override and no manual stock-in + cash-out workaround for refunds.
@@ -108,7 +108,7 @@ value' = value − c
 
 ### 5.4 Purchase return
 - Must reference the original purchase line; qty cumulatively ≤ original qty and ≤ current on-hand.
-- Inventory value removed = `round(orig_line_value × q / orig_q)` (original purchase cost, not today's average) with last-return remainder rule; quantity and value both reduce (`qty' = qty − q`, `value' = value − v`). If that would make value negative or leave qty=0 with value≠0, the document is rejected with an explanation (indicates costing inconsistency).
+- Inventory value removed uses the cumulative method on the original purchase line value (`round(orig_line_value × cumulative_returned_qty / orig_qty) − value already removed`; original purchase cost, not today's average); quantity and value both reduce (`qty' = qty − q`, `value' = value − v`). If that would make value negative or leave qty=0 with value≠0, the document is rejected with an explanation (indicates costing inconsistency).
 - Settlement: reduces payable (if unpaid) or creates supplier refund/credit. If the supplier credits a different amount than cost, the difference posts to `Purchase Price Variance` expense/other income account — **not supported in v1**; v1 requires credit = cost value and states so.
 - Journal: `Dr Accounts Payable or Cash / Cr Inventory`.
 
