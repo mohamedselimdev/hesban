@@ -25,5 +25,5 @@ Status vocabulary: **Accepted/Approved** = decided; **Conditionally approved** =
 | [017](ADR-017-no-vat-in-prototype.md) | No VAT in prototype | Approved (D-03) |
 | [018](ADR-018-returns-policy.md) | Returns need original invoice | Approved (D-12) |
 | [019](ADR-019-platform-support.md) | Windows 11 primary | Approved (D-10); Windows 10 checks pending |
-| [020](ADR-020-code-signing-decision.md) | Code-signing method | Approved (D-09); method not chosen |
+| [020](ADR-020-code-signing-decision.md) | Code-signing method | Recommendation written (signed NSIS EXE, OV certificate); awaiting owner confirmation and CA answers |
 | [021](ADR-021-shadow-mode-and-release-gates.md) | Shadow mode and release gates | Approved |

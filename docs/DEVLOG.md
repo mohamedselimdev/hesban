@@ -2,6 +2,24 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-12 Code signing and distribution investigation
+
+Done (branch `w1-12-code-signing`; no purchase, nothing published)
+- `docs/code-signing.md`: comparison of Microsoft Store MSIX, external signed NSIS EXE (OV), external signed MSIX and Azure Artifact Signing on cost, Egypt eligibility, installer experience, updates, licensing compatibility, data safety and tooling; every claim tagged official / secondary / unverified, with sources.
+- ADR-020 rewritten as a recommendation: signed NSIS installer with an OV certificate (key in cloud signing or hardware token). ADR-014 and ADR index updated.
+
+Key findings (from web searches on 2026-11-01)
+- Azure Artifact Signing public trust: organizations in USA/Canada/EU/UK, individuals USA/Canada only (Microsoft quickstart) — Egypt not eligible as far as found.
+- Microsoft Store: Egypt listed as a supported developer-account market (older fee table: 133 EGP individual); free individual registration announced 2025-09-10 but applicability to Egypt not confirmed.
+- OV/EV private keys must be in certified hardware or cloud signing since 2023 (vendor sources); validity now about 460 days; prices indicative $129–440/year from reseller pages.
+- electron-builder MSIX target is beta; Store policy on offline/external licensing and MSIX data location on uninstall are NOT verified.
+
+Tests executed
+- `pnpm docs:links` OK, `pnpm scan:secrets` OK (documentation-only change; no code tests affected).
+
+Open
+- No CA has confirmed Egyptian identity validation (owner action, written questions listed in the document). Owner's legal status (individual vs registered business) unknown. Recommendation awaits owner confirmation.
+
 ## 2026-11-01 — W1-09 Hardware abstractions and mocks (physical testing BLOCKED)
 
 Verified before starting: HEAD `219799a` — CI run 41332245191 completed with conclusion `success`; local `main` and `origin/main` both `219799a74f7c…`; repository is private.
