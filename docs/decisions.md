@@ -60,4 +60,4 @@ Egypt only · EGP · Windows desktop · offline-first modular monolith · single
 | 9 | Rules lacked deterministic extra-cost allocation | Added to §5.1. |
 | 10 | D-06 normalisation unspecified | Input digit normalisation rule added (rules §2). |
 
-Open items remaining: accountant sign-off, signing method, SQLCipher spike result, Windows 10 eligibility, pilot shop tax/ETA obligations, hardware models.
+Open items remaining (2026-11-01): accountant sign-off (PENDING), signing method, owner acceptance of the SQLCipher spike limits (spike itself is done, see adr/ADR-002-sqlcipher-spike.md), Windows 10 eligibility, pilot-shop tax/ETA obligations, hardware models (physical testing BLOCKED).

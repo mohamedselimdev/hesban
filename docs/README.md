@@ -2,7 +2,7 @@
 
 Arabic-first, offline Windows POS / inventory / purchasing / balances / cash for small Egyptian retailers. Developed by Mohamed Selim.
 
-Status: decisions D-01…D-12 resolved 2026-11-01 (approved with conditions). Documents updated for consistency. No application code yet; Week 1 starts after the consistency review is accepted.
+Status (2026-11-01): decisions D-01…D-12 resolved (approved with conditions). Week 1 in progress: toolchain, secure Electron shell, SQLite encryption spike, migration runner, CI workflow (not yet run on GitHub) and Arabic RTL UI foundation are done; hardware, signing and accountant tasks are blocked or pending. No business modules exist yet. Executed test results are recorded only in [DEVLOG.md](DEVLOG.md).
 
 | # | Document |
 |---|---|
@@ -15,8 +15,11 @@ Status: decisions D-01…D-12 resolved 2026-11-01 (approved with conditions). Do
 | G | [07-roadmap.md](07-roadmap.md) — 16-week roadmap |
 | H | [08-week1-tasks.md](08-week1-tasks.md) — Week 1 checklist |
 | — | [decisions.md](decisions.md) — Approved decisions, mandatory rules, conflict review |
-| — | [adr/README.md](adr/README.md) — ADR index and statuses |
-| — | [DEVLOG.md](DEVLOG.md) — Development log |
+| — | [adr/README.md](adr/README.md) — ADR index (ADR-001 to 021, one file each) and statuses |
+| — | [adr/ADR-002-sqlcipher-spike.md](adr/ADR-002-sqlcipher-spike.md) — encryption spike evidence |
+| — | [adr/ADR-009-renderer-ui-rtl.md](adr/ADR-009-renderer-ui-rtl.md) — Arabic RTL decisions and evidence |
+| — | [visual/w1-08/](visual/w1-08/) — UI screenshots for human review |
+| — | [DEVLOG.md](DEVLOG.md) — Development log (executed tests only) |
 
 ## Decision summary (details in decisions.md)
 

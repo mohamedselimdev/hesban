@@ -189,4 +189,4 @@ Priority: **M** Must (release blocker), **S** Should (cut if schedule slips, in 
 
 ## 10. Open decisions requiring approval
 
-Resolved 2026-11-01: see [decisions.md](decisions.md). Remaining gates: accountant review before Week 4, SQLCipher spike, signing method, Windows 10 eligibility, hardware matrix.
+Resolved 2026-11-01: see [decisions.md](decisions.md). Remaining gates: accountant review before Week 4 (PENDING), owner acceptance of SQLCipher spike limits, signing method, Windows 10 eligibility, hardware matrix (BLOCKED, no physical devices yet).

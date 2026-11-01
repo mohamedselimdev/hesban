@@ -21,6 +21,7 @@
     "test:ui": "vitest run tests/electron/ui.test.ts",
     "verify:build": "node tools/verify-build.mjs",
     "scan:secrets": "node tools/scan-secrets.ts",
+    "docs:links": "node tools/check-doc-links.ts",
     "audit:ci": "pnpm audit --prod && pnpm audit --audit-level high && pnpm audit signatures",
     "sbom:generate": "pnpm sbom --sbom-format cyclonedx --lockfile-only --out sbom.cdx.json",
     "format": "prettier --check ."

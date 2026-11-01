@@ -37,6 +37,9 @@ jobs:
       - name: Secret scan
         run: pnpm scan:secrets
 
+      - name: Documentation links
+        run: pnpm docs:links
+
       - name: Lint
         run: pnpm lint
 

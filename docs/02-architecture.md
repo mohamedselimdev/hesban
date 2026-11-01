@@ -78,7 +78,7 @@ Each shows options, trade-offs, recommendation. The Week-1 spikes may change a r
 ### ADR-004 Query layer: Kysely over hand-written SQL migrations
 - Alternatives: raw SQL strings, Drizzle, Prisma (heavy engine binaries, poor fit), TypeORM.
 - Trade-off: financial SQL (aggregations, locking behaviour) is better explicit than hidden behind an ORM; Kysely gives typed queries without hiding SQL. Migrations are plain numbered `.sql` files with checksum validation, applied forward-only inside a transaction, preceded by an automatic pre-migration backup.
-- Decision: **Kysely + custom minimal migration runner** (not a heavy framework).
+- Decision: custom minimal migration runner (implemented in W1-05, all pending migrations in one transaction). Kysely adoption is a Week 2 gate and is not yet decided (see adr/ADR-004).
 
 ### ADR-005 Money and quantity representation
 - Money: integer **piastres** (`INTEGER`, 64-bit in SQLite). Never floats. JS arithmetic that multiplies then divides (value × qty ÷ onHand) uses **BigInt**, because intermediate products can exceed 2^53.
@@ -104,7 +104,7 @@ Each shows options, trade-offs, recommendation. The Week-1 spikes may change a r
 ### ADR-009 Renderer stack
 - React + TypeScript + Vite via `electron-vite`; TanStack Query for IPC data fetching/caching; Zustand for POS cart/UI state; React Hook Form + zod for forms; TanStack Table + virtualisation for grids.
 - UI kit: own thin design system on Radix UI primitives with CSS logical properties (`margin-inline-start`, etc.) so RTL is native rather than patched. Alternatives: MUI (RTL works but heavy, look not tuned for POS), Ant Design (good RTL, very heavy, opinionated). Bundled local Arabic font (e.g. Cairo or Tajawal, licence-checked); no CDN anywhere.
-- i18n: externalised strings from day one (`i18next` or a minimal typed dictionary — decide in Week 1); numerals configurable; `Intl` with `ar-EG` and `Africa/Cairo`.
+- i18n: externalised strings from day one; decided in W1-08: a minimal typed dictionary (`src/renderer/i18n/ar.ts`), not `i18next` (ADR-009); numerals configurable; `Intl` with `ar-EG` and `Africa/Cairo`.
 
 ### ADR-010 Backup and restore
 - Backup = SQLite online backup API / `VACUUM INTO` into a temp file, then encrypt (AES-256-GCM) with a key derived by a memory-hard KDF (scrypt or Argon2id) from a backup passphrase, write with a header (format version, app version, schema version, created-at, shop id, SHA-256 of plaintext), `fsync`, re-open and verify by decrypting and running `PRAGMA integrity_check` + the invariant checker (on a temp copy).

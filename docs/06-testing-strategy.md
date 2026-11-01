@@ -89,6 +89,7 @@ Boundary tests at 2^53, max invoice amount, qty × price products exceeding 2^53
 
 ## 7. UI and E2E tests
 
+- Implemented so far (W1-03, W1-08): real-Electron probes launched by Vitest (`pnpm test:electron` security probe, `pnpm test:ui` layout/keyboard probe with screenshots); Playwright remains the plan for full journeys.
 - Playwright driving the real Electron build; Arabic strings asserted; RTL layout assertions (computed `direction`, logical alignment) and screenshot comparisons on key screens.
 - Critical journeys: first-run setup → add product → purchase → sale by barcode → partial payment → return → shift close → day close → backup → restore → export.
 - Keyboard-only POS flow; scanner simulation (rapid key events with correct inter-key timing, Arabic layout active).

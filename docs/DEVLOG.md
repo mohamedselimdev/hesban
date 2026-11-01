@@ -2,6 +2,19 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-10 ADRs finalised, documents reconciled
+
+Done
+- 19 new ADR files `docs/adr/ADR-001…021` (002 and 009 are the existing evidence files); each has status, context, decision, alternatives, consequences, evidence. `docs/adr/README.md` is now an index with real statuses (Approved / Conditionally approved / Proposed). No ADR is marked verified where evidence does not exist (ADR-011 hardware BLOCKED; ADR-019 Windows 10 unverified; ADR-020 method not chosen).
+- Inconsistencies fixed: architecture doc said i18n was undecided (now: minimal typed dictionary) and Kysely was the decision (now: undecided, migrations done); decisions.md and PRD still listed the SQLCipher spike as outstanding; docs/README status was out of date; testing strategy did not mention the real-Electron probes.
+- New tool `tools/check-doc-links.ts` (`pnpm docs:links`, CI step, unit test) fails on broken relative Markdown links.
+
+Tests executed (2026-11-01)
+- `pnpm typecheck`, `pnpm lint`, `pnpm format`, `pnpm scan:secrets` clean. `pnpm test`: 8 files, 86 tests passed (84 + 2 link-checker tests). `pnpm docs:links`: OK.
+
+Open
+- `docs/code-signing.md` is referenced as "not yet written" (W1-12). Hardware ADR-011 stays Proposed.
+
 ## 2026-11-01 — W1-08 Arabic RTL, typography, numbers, keyboard, responsive
 
 Done
