@@ -16,4 +16,4 @@ ESC/POS text with code pages (shaping problems); raster-only printing.
 Hardware abstraction layer and mocks first; real-device results are the only evidence for compatibility claims.
 
 ## Evidence and links
-None physical yet. See Week 1 review.
+Software ports, receipt renderers, scan decoder and mocks exist (W1-09, `tests/unit/hardware.test.ts`) and prove only code behaviour. **No physical evidence**; all device cases are BLOCKED in [../hardware-matrix.md](../hardware-matrix.md).

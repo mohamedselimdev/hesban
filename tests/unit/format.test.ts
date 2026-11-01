@@ -11,7 +11,7 @@ import {
   formatMoneyWithCurrency,
   formatQuantity,
   isolateLtr,
-} from '../../src/renderer/i18n/format';
+} from '../../src/shared/format';
 import { ar, t } from '../../src/renderer/i18n/ar';
 
 describe('formatMoney', () => {

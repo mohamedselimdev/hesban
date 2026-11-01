@@ -8,7 +8,7 @@ import {
   formatDateTime,
   formatQuantity,
   type DigitStyle,
-} from '../i18n/format';
+} from '../../shared/format';
 import { DataGrid, type Column } from '../ui/DataGrid';
 import { Ltr, Money } from '../ui/Money';
 
