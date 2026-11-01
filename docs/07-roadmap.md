@@ -65,4 +65,4 @@ Domain + data + tests ~35%, UI ~30%, hardware/printing ~7%, backup/security ~12%
 ## 7. Governance
 
 - Change control: any change to v1 scope, accounting rules or ADRs is a written proposal with impact on schedule/risk; implemented only after approval.
-- Weekly review checklist: tests executed and recorded · invariants green · docs updated · no AI/tool traces in tracked files · no secrets in repo · checkpoint committed to the private repository.
+- Weekly review checklist: tests executed and recorded · invariants green · docs updated · no tool-specific files or local paths in tracked files · no secrets in repo · checkpoint committed to the private repository.

@@ -137,7 +137,7 @@ All must be true and evidenced:
 ## 12. Defect management and definition of done
 
 Severity: **S1** data loss/corruption or wrong money; **S2** feature blocked / security flaw; **S3** workaround exists; **S4** cosmetic. S1 stops the line.
-Definition of Done for any task: code + tests at the right layer, lint/typecheck clean, docs/ADR updated if a decision changed, dev-log entry listing commands actually run and results, no AI/vendor-tool traces in tracked files.
+Definition of Done for any task: code + tests at the right layer, lint/typecheck clean, docs/ADR updated if a decision changed, dev-log entry listing commands actually run and results, no tool-specific files or local paths in tracked files.
 
 ## 13. Reporting
 
