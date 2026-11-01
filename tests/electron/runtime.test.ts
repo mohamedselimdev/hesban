@@ -61,6 +61,18 @@ describe('real Electron renderer (built app)', () => {
     expect(report['windowCount']).toBe(report['windowCountBefore']);
   });
 
+  it('opens the real encrypted database with a DPAPI-wrapped key (real safeStorage)', () => {
+    expect(report['databaseError']).toBeUndefined();
+    expect(report['database']).toMatchObject({
+      keyCreated: true,
+      reopenedApplied: 0,
+      readBack: { value: 'ok' },
+      headerIsPlainSqlite: false,
+      keyFileHoldsPlainKey: false,
+    });
+    expect((report['database'] as { migrated: number }).migrated).toBeGreaterThanOrEqual(2);
+  });
+
   it('denies permissions', () => {
     expect(String(report['geolocation'])).toMatch(/^denied|unavailable/);
     expect(['denied', 'unavailable']).toContain(report['notification']);

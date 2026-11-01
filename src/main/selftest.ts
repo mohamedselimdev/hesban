@@ -1,5 +1,37 @@
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import type { BrowserWindow } from 'electron';
+import { openAppDatabase } from '../infrastructure/db/database-service';
+import { DB_FILE, KEY_FILE, loadOrCreateDbKey } from '../infrastructure/db/key-store';
+import { electronKeyWrapper } from './safe-storage';
+
+/** Opens the real encrypted database with the real DPAPI key wrapper inside Electron. */
+async function databaseProbe(outPath: string): Promise<Record<string, unknown>> {
+  const dir = join(dirname(outPath), 'db-probe');
+  mkdirSync(dir, { recursive: true });
+  const first = await openAppDatabase({ dir, wrapper: electronKeyWrapper });
+  const created = first.keyCreated;
+  const migrated = first.migration.current;
+  first.db.prepare("insert into app_meta(key, value) values ('probe', 'ok')").run();
+  first.close();
+  const second = await openAppDatabase({ dir, wrapper: electronKeyWrapper });
+  const readBack = second.db.prepare("select value from app_meta where key = 'probe'").get();
+  const reopenedApplied = second.migration.applied.length;
+  second.close();
+  const { keyHex } = await loadOrCreateDbKey(dir, electronKeyWrapper);
+  const keyBlob = readFileSync(join(dir, KEY_FILE));
+  const header = readFileSync(join(dir, DB_FILE)).subarray(0, 15).toString('latin1');
+  return {
+    keyCreated: created,
+    migrated,
+    reopenedApplied,
+    readBack,
+    headerIsPlainSqlite: header === 'SQLite format 3',
+    keyFileHoldsPlainKey:
+      keyBlob.includes(Buffer.from(keyHex)) || keyBlob.includes(Buffer.from(keyHex, 'hex')),
+    keyBlobBytes: keyBlob.length,
+  };
+}
 
 /**
  * Runtime security probe. Runs only when HESBAN_SELFTEST=1 and the app is not packaged.
@@ -50,6 +82,11 @@ export async function runSelfTest(win: BrowserWindow, outPath: string): Promise<
     report.windowCountBefore = windowsBefore;
   } catch (error) {
     report.fatal = error instanceof Error ? error.message : String(error);
+  }
+  try {
+    report.database = await databaseProbe(outPath);
+  } catch (error) {
+    report.databaseError = error instanceof Error ? error.message : String(error);
   }
   writeFileSync(outPath, JSON.stringify(report, null, 2));
 }

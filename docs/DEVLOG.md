@@ -2,6 +2,22 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W2-02 Database service, key store, identity/audit schema
+
+Done (branch `w2-02-db-service`)
+- `src/infrastructure/db/key-store.ts`: random 256-bit key created on first run only, stored wrapped (DPAPI in the app via `src/main/safe-storage.ts`, async `safeStorage` API) with durable temp-file + rename; never creates a new key beside an existing database (`KEY_MISSING_FOR_EXISTING_DATABASE`); unreadable/damaged key → `KEY_UNREADABLE` with no key material in the message; honours `shouldReEncrypt`.
+- `src/infrastructure/db/database-service.ts`: `openAppDatabase` (unwrap/create key, open encrypted DB, migrate, backup hook before changing an existing DB, close on any failure, WAL truncate on close).
+- Migration `0002_identity_audit.sql`: `users` (roles, case-insensitive unique usernames, no delete, last-active-owner trigger), `audit_log` (immutable, DB-enforced chain link to previous hash), `command_log` (unique command id, immutable).
+- `src/infrastructure/db/audit-log.ts`: `appendAudit` (SHA-256 chain over canonical JSON, same transaction as the action) and `verifyAuditChain`.
+- ADR-004: Kysely deferred to the Week 4 re-baseline (plain prepared statements with typed rows).
+
+Tests executed (2026-11-01)
+- `pnpm typecheck`, `lint`, `format` clean. `pnpm test`: 12 files, 156 tests passed (133 + 23 new: key store, DB service, identity triggers, audit chain incl. tamper detection with triggers dropped, rollback together with the action, command log).
+- `pnpm test:electron` (real Electron, probe build): 8 passed, including the new check that the real DPAPI-wrapped key opens the real encrypted database, reopen applies no migration, key file does not contain the plain key, DB header is not plain SQLite.
+
+Not proven
+- DPAPI key portability to another Windows user/PC is not tested (expected to fail; recovery is the backup path, Week 12). The audit chain detects tampering after the fact; it does not prevent someone with the key from rebuilding the whole chain. Main process does not open the DB yet (wiring comes with auth, W2-04).
+
 ## 2026-11-01 — W2-01 Week 1 carry-overs (Week 2 started; owner accepted the Week 1 review)
 
 Done (branch `w2-01-carryovers`)
