@@ -2,6 +2,16 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-11 Week 1 review (verdict CONDITIONAL)
+
+Done (branch `w1-11-week1-review`)
+- `docs/week1-review.md`: acceptance audit of every Week 1 task against its criteria, commit list, failures, blockers, unresolved risks, roadmap reconciliation, Week 2 proposal. Roadmap §3a and docs index updated.
+- Clean-clone run of `origin/main` at faef472 (same machine, not a second computer): scan:secrets, docs:links, lint, typecheck, format OK; `pnpm test` 132 passed; `test:electron` 7 passed; `test:ui` 12 passed; `verify:build -- --fuses` OK; `audit:ci` exit 0 (1 moderate dev-tooling advisory); clean git status.
+- Added `@vitest/coverage-v8` 5.0.5 (new dev dependency, no upgrades) and `pnpm test:coverage`: first measurement of domain coverage was 95.18% branch overall but qty.ts 83.33% and money.ts 92.85% (below the W1-06 per-file criterion). Added assertions for negative quantity formatting and `neg` on non-zero values: now 98.79% branch, 100% lines; `numeric.ts:92` is an unreachable defensive guard. `pnpm test`: 10 files, 133 tests passed.
+
+New finding
+- `selftest` and `uicheck` chunks are present in the production main bundle (`out/main/chunks`). Guarded by `!app.isPackaged` plus env vars, but they should be excluded from production builds (Week 2 carry-over).
+
 ## 2026-11-01 — W1-13 Accountant review checklist (external approval PENDING)
 
 Done (branch `w1-13-accountant-checklist`)

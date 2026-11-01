@@ -42,6 +42,15 @@ Status: APPROVED WITH CONDITIONS (see [decisions.md](decisions.md)) · Revised: 
 
 Note: shadow mode (from Weeks 11–12) compares HESBAN with the shop's existing system and is never the sole financial record. A 30-day shadow run is evidence, not production acceptance. If gates are not met in Week 16, the release date moves; features are cut (§4) before accounting, security or recovery testing is reduced.
 
+## 3a. Actual status (updated 2026-11-01, end of Week 1)
+
+| Wk | Planned | Actual | Carry-over |
+|---|---|---|---|
+| 1 | Foundations and spikes | **CONDITIONAL** (see [week1-review.md](week1-review.md)). Done: toolchain, secure Electron shell, encrypted SQLite spike (ADR-002 conditional), migration runner, Money/Qty core (98.79% branch coverage), CI green on GitHub, Arabic RTL foundation with real-window checks, ADR-001…021, hardware ports/mocks, signing and accountant documents. Not met: physical hardware (BLOCKED), accountant engaged (PENDING), enforced branch protection (unavailable on plan), signing decision (recommendation only). | Hardware tests; accountant engagement; CA answers by end of Week 2; lint rules for `fs`/`child_process`/raw money arithmetic; exclude dev probes from production bundle; fuses in a packaged build; coverage gate in CI. |
+| 2 | Identity and platform | Not started (waits for the review to be accepted). Proposed tasks are listed in the review. | — |
+
+Unscheduled work done in Week 1 that moves later weeks earlier: repository and CI, build verifier, doc link checker, receipt/scan/print service logic and mocks (originally Week 10). Physical printing work in Week 10 still needs real devices.
+
 ## 4. Scope-cut order (if behind; each requires approval)
 
 1. CAT-07 CSV import → manual entry only + documented template.

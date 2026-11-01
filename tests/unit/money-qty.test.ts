@@ -27,6 +27,8 @@ describe('money', () => {
     expect(add(piastres(150), piastres(250))).toBe(400);
     expect(sub(piastres(150), piastres(250))).toBe(-100);
     expect(Object.is(neg(ZERO), 0)).toBe(true);
+    expect(neg(piastres(5))).toBe(-5);
+    expect(neg(piastres(-5))).toBe(5);
     expect(sum([piastres(1), piastres(2), piastres(3)])).toBe(6);
     expect(sum([])).toBe(0);
   });
@@ -84,6 +86,13 @@ describe('qty', () => {
     expect(formatQty(milli(2000))).toBe('2');
     expect(formatQty(milli(1))).toBe('0.001');
     expect(formatQty(milli(1500), 'arabic-indic')).toBe('١٫٥');
+  });
+
+  it('formats negative quantities and zero', () => {
+    expect(formatQty(milli(-1500))).toBe('-1.5');
+    expect(formatQty(milli(-1))).toBe('-0.001');
+    expect(formatQty(milli(0))).toBe('0');
+    expect(formatQty(milli(-250), 'arabic-indic')).toBe('-٠٫٢٥');
   });
 
   it('rejects malformed quantities', () => {
