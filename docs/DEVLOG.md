@@ -2,6 +2,20 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W2-03 Authentication, sessions, RBAC (service layer; IPC wiring is W2-04)
+
+Done (branch `w2-03-auth-rbac`; ADR-022)
+- `src/domain/permissions.ts`: 26 permissions, 3 roles, matrix mirroring business-rules §8. `src/application/auth/`: password and PIN policy, lockout schedule, in-memory session store (idle 15 min sliding, hard limit 12 h, keyed by window id, revocation per user). `src/infrastructure/security/password-hasher.ts`: scrypt (passwords N=2^17, PINs N=2^15; measured here 270 ms / 70 ms), self-describing hash string, constant-time verify, refuses malformed/oversized parameters, rehash on weaker parameters. `src/infrastructure/auth/auth-service.ts`: first-owner setup with one-time recovery key, password and PIN login, DB-persisted lockout, uniform behaviour for unknown users, user create/role/deactivate/reset, own-password change, recovery-key reset with persisted lockout, audit entries in the same transaction.
+- Scanner change: the generic `secret-assignment` rule no longer applies under `tests/` (fake test passwords); token shapes, private keys and hex key literals are still checked there (tested).
+
+Tests executed (2026-11-01)
+- typecheck, lint, format, docs:links, scan:secrets clean. `pnpm test`: 15 files, 198 passed (156 + 42 new: permission matrix against an independent hand-written copy, policies, lockout, sessions, hasher with real parameters and malicious stored values, 23 auth-service integration tests incl. forged-role refusal, lockout persistence across restart, unknown-user parity, audit contents, last-owner protection, recovery key). Coverage gate: 98.82% branches on src/domain (now includes permissions.ts).
+
+My own test mistakes (code was right): two arithmetic errors in a session-expiry test; test passwords that contained the username were (correctly) rejected by the policy, fixture passwords changed.
+
+Not proven
+- Login time on a low-end PC; concurrent logins; UI. Not wired into Electron yet: the main process does not open the database or register auth channels (W2-04). Infrastructure auth code is not under the coverage gate (gate covers src/domain only).
+
 ## 2026-11-01 — W2-02 Database service, key store, identity/audit schema
 
 Done (branch `w2-02-db-service`)
