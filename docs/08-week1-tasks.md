@@ -1,6 +1,6 @@
 # HESBAN — Week 1 Detailed Tasks
 
-Status: APPROVED DECISIONS APPLIED (see [decisions.md](decisions.md)) · Starts only after the documentation consistency review is accepted (W1-00)
+Status: WEEK 1 REVIEW DONE — verdict CONDITIONAL; per-task results and gaps are in [week1-review.md](week1-review.md). This file keeps the original plan; it is not a status report.
 Capacity: ~55 h planned + ~5 h buffer. Work week suggestion: Saturday–Thursday, 6 days.
 
 Theme: **prove the risky things, set the quality bar, write no business logic yet** (except the numeric core, which everything depends on).
