@@ -19,6 +19,10 @@ Status (2026-11-01): decisions D-01…D-12 resolved (approved with conditions). 
 | — | [adr/ADR-002-sqlcipher-spike.md](adr/ADR-002-sqlcipher-spike.md) — encryption spike evidence |
 | — | [adr/ADR-009-renderer-ui-rtl.md](adr/ADR-009-renderer-ui-rtl.md) — Arabic RTL decisions and evidence |
 | — | [visual/w1-08/](visual/w1-08/) — UI screenshots for human review |
+| — | [accountant-review-checklist.md](accountant-review-checklist.md) — accountant questions and worked examples (approval PENDING) |
+| — | [code-signing.md](code-signing.md) — signing and distribution options |
+| — | [hardware-matrix.md](hardware-matrix.md) — hardware compatibility (all BLOCKED) |
+| — | [repo-prep.md](repo-prep.md) — repository preparation |
 | — | [DEVLOG.md](DEVLOG.md) — Development log (executed tests only) |
 
 ## Decision summary (details in decisions.md)

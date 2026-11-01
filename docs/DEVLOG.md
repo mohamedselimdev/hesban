@@ -2,6 +2,19 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-13 Accountant review checklist (external approval PENDING)
+
+Done (branch `w1-13-accountant-checklist`)
+- `docs/accountant-review-checklist.md`: 11 sections, 50+ questions covering journals, costing, purchases, extra costs, sales discounts, returns, receivables/payables, opening balances, cash reconciliation, expenses, rounding and boundaries; every response and the sign-off table are marked PENDING. No accountant has reviewed anything; the document says so.
+- `tests/unit/accountant-examples.test.ts`: 16 tests that compute every worked example in the checklist with the real domain functions (discount allocation, weighted average, sale discount, returns, payment allocation, cash over/short, balanced journals).
+- Specification defect found while writing examples: the return rule "the last return takes the remainder" was ambiguous and gives different per-return amounts than a cumulative method. Rules §5.3/§5.4 now state the cumulative method (refund and restored cost = round(total × cumulative returned qty / original qty) − amount already refunded) and the checklist asks the accountant to confirm it (question 5.2).
+
+Tests executed (2026-11-01)
+- `pnpm test`: 10 files, 132 tests passed (116 + 16); typecheck, lint, format, docs:links, scan:secrets clean. The 16 example tests passed on first run (hand calculations matched the code).
+
+Open
+- Accountant not yet engaged; Week 4 posting work stays blocked until sign-off.
+
 ## 2026-11-01 — W1-12 Code signing and distribution investigation
 
 Done (branch `w1-12-code-signing`; no purchase, nothing published)
