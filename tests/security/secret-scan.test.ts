@@ -39,6 +39,17 @@ describe('secret scanner', () => {
     expect(findSecrets('x.ts', clean)).toEqual([]);
   });
 
+  it('exempts only the generic assignment rule inside tests/, not real token shapes', () => {
+    const assignment = 'const password = "' + 'hunter2hunter2' + '";';
+    expect(findSecrets('tests/a.test.ts', assignment)).toEqual([]);
+    expect(findSecrets('tests\\a.test.ts', assignment)).toEqual([]);
+    expect(findSecrets('src/a.ts', assignment)).toHaveLength(1);
+    const token = 'gh' + 'p_' + 'A1b2'.repeat(9);
+    expect(findSecrets('tests/a.test.ts', 'x ' + token).map((f) => f.rule)).toEqual([
+      'github-token',
+    ]);
+  });
+
   it('honours the allow marker on the same line only', () => {
     const line = 'const password = "' + 'hunter2hunter2' + '";';
     expect(findSecrets('x.ts', `${line} // secret-scan:allow`)).toEqual([]);

@@ -43,11 +43,16 @@ export function isForbiddenFile(path: string): boolean {
   return FORBIDDEN_FILE.some((p) => p.test(normalized));
 }
 
+/** Test fixtures use obviously fake passwords; token shapes and key literals are still checked there. */
+const FIXTURE_EXEMPT_RULES = new Set(['secret-assignment']);
+
 export function findSecrets(file: string, text: string): Finding[] {
   const findings: Finding[] = [];
+  const inTests = file.split('\\').join('/').startsWith('tests/');
   text.split(/\r?\n/).forEach((lineText, index) => {
     if (lineText.includes(ALLOW_MARKER)) return;
     for (const { rule, pattern } of RULES) {
+      if (inTests && FIXTURE_EXEMPT_RULES.has(rule)) continue;
       if (pattern.test(lineText)) findings.push({ file, line: index + 1, rule });
     }
   });
