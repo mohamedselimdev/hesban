@@ -1,0 +1,36 @@
+/** Arabic strings for sign-in and first-run setup. Merged into `ar` in ./ar.ts. */
+export const authStrings = {
+  loading: 'جارٍ التحميل…',
+  setupTitle: 'إعداد أول مرة: حساب صاحب المحل',
+  loginTitle: 'تسجيل الدخول',
+  username: 'اسم المستخدم',
+  displayName: 'الاسم الظاهر',
+  password: 'كلمة المرور',
+  confirmPassword: 'تأكيد كلمة المرور',
+  createOwner: 'إنشاء الحساب',
+  login: 'دخول',
+  logout: 'تسجيل الخروج',
+  welcome: 'مرحباً',
+  role: 'الصلاحية',
+  recoveryTitle: 'مفتاح الاسترداد',
+  recoveryWarning:
+    'اكتب هذا المفتاح واحتفظ به في مكان آمن. يظهر مرة واحدة فقط ولا يمكن استرجاعه. بدونه وبدون كلمة المرور لا يمكن فتح البيانات.',
+  recoverySaved: 'حفظت المفتاح',
+  passwordMismatch: 'كلمتا المرور غير متطابقتين',
+  mustChangePassword: 'يجب تغيير كلمة المرور قبل المتابعة',
+  errors: {
+    INVALID_CREDENTIALS: 'اسم المستخدم أو كلمة المرور غير صحيحة',
+    LOCKED: 'تم إيقاف الدخول مؤقتاً بسبب محاولات خاطئة. حاول بعد',
+    POLICY:
+      'كلمة المرور لا تستوفي الشروط (10 أحرف على الأقل، غير شائعة، لا تحتوي على اسم المستخدم)',
+    FORBIDDEN: 'ليست لديك صلاحية لهذا الإجراء',
+    NOT_FOUND: 'غير موجود',
+    USERNAME_TAKEN: 'اسم المستخدم مستخدم بالفعل',
+    FIRST_RUN_ALREADY_DONE: 'تم إعداد التطبيق من قبل',
+    INVALID_ROLE: 'صلاحية غير صحيحة',
+    PIN_NOT_ALLOWED_FOR_ROLE: 'الرمز السري للكاشير فقط',
+    INTERNAL: 'حدث خطأ غير متوقع',
+  },
+  roles: { owner: 'صاحب المحل', manager: 'مدير', cashier: 'كاشير' },
+  seconds: 'ثانية',
+} as const;

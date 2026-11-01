@@ -1,3 +1,4 @@
+import { channelNames } from '../../src/shared/contracts/ipc';
 import { describe, expect, it } from 'vitest';
 import { buildCsp } from '../../src/main/csp';
 import {
@@ -165,20 +166,52 @@ describe('content security policy', () => {
 });
 
 describe('preload API surface', () => {
-  it('exposes exactly system.ping, frozen, and no raw IPC primitives', async () => {
+  const surface = {
+    system: ['ping'],
+    auth: ['status', 'setup', 'login', 'loginPin', 'logout', 'changePassword'],
+    users: ['list', 'create', 'resetPassword', 'setRole', 'deactivate'],
+    audit: ['verify'],
+  };
+
+  it('exposes exactly the declared groups and methods, all frozen, and no raw IPC primitives', () => {
+    const api = createApi(async () => ({ ok: true }));
+    expect(Object.keys(api).sort()).toEqual(Object.keys(surface).sort());
+    expect(Object.isFrozen(api)).toBe(true);
+    for (const [group, methods] of Object.entries(surface)) {
+      const g = (api as unknown as Record<string, Record<string, unknown>>)[group] as Record<
+        string,
+        unknown
+      >;
+      expect(Object.keys(g).sort(), group).toEqual([...methods].sort());
+      expect(Object.isFrozen(g), group).toBe(true);
+    }
+    for (const forbidden of ['ipcRenderer', 'invoke', 'send', 'on', 'require', 'process']) {
+      expect(forbidden in api, forbidden).toBe(false);
+    }
+  });
+
+  it('maps every method to exactly one contract channel with the payload it was given', async () => {
     const calls: Array<[string, unknown]> = [];
     const api = createApi(async (channel, payload) => {
       calls.push([channel, payload]);
       return { ok: true };
     });
-    expect(Object.keys(api)).toEqual(['system']);
-    expect(Object.keys(api.system)).toEqual(['ping']);
-    expect(Object.isFrozen(api)).toBe(true);
-    expect(Object.isFrozen(api.system)).toBe(true);
-    for (const forbidden of ['ipcRenderer', 'invoke', 'send', 'on', 'require', 'process']) {
-      expect(forbidden in api, forbidden).toBe(false);
-    }
     await api.system.ping('abc');
-    expect(calls).toEqual([['system:ping', { nonce: 'abc' }]]);
+    await api.auth.status();
+    await api.auth.login({ username: 'u1x', password: 'p' });
+    await api.auth.logout();
+    await api.users.list();
+    await api.users.deactivate({ userId: 3 });
+    await api.audit.verify();
+    expect(calls).toEqual([
+      ['system:ping', { nonce: 'abc' }],
+      ['auth:status', {}],
+      ['auth:login', { username: 'u1x', password: 'p' }],
+      ['auth:logout', {}],
+      ['users:list', {}],
+      ['users:deactivate', { userId: 3 }],
+      ['audit:verify', {}],
+    ]);
+    for (const [channel] of calls) expect(channelNames as string[]).toContain(channel);
   });
 });

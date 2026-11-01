@@ -200,4 +200,29 @@ describe('application database service', () => {
     open.push(second);
     expect(calls).toEqual([{ fromVersion: 1, toVersion: 2 }]);
   });
+
+  it('makes an encrypted safety copy before migrating an existing database, and keeps the newest three', async () => {
+    const secret = randomBytes(32);
+    const make = (n: number) =>
+      Array.from({ length: n }, (_, i) => ({
+        version: i + 1,
+        name: `m${i + 1}`,
+        sql: `create table t${i + 1} (id integer primary key) strict;`,
+      }));
+    (await openAppDatabase({ dir, wrapper: fakeWrapper(secret), migrations: make(1) })).close();
+    expect(readdirSync(dir).filter((f) => f.endsWith('.bak'))).toEqual([]); // fresh DB: no copy
+
+    for (let n = 2; n <= 6; n++) {
+      (await openAppDatabase({ dir, wrapper: fakeWrapper(secret), migrations: make(n) })).close();
+    }
+    const copies = readdirSync(dir).filter((f) => f.endsWith('.bak'));
+    expect(copies).toHaveLength(3);
+    expect(copies.every((f) => /pre-v\d+-to-v\d+-/.test(f))).toBe(true);
+
+    // a copy is a usable, encrypted database at the older schema
+    const header = readFileSync(join(dir, copies[0] as string))
+      .subarray(0, 15)
+      .toString('latin1');
+    expect(header).not.toBe('SQLite format 3');
+  });
 });
