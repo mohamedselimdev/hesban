@@ -1,6 +1,6 @@
 # ADR-014 — Packaging, code signing and updates
 
-Status: Proposed. Signing method investigation: docs/code-signing.md (W1-12, not yet written). No purchase made.
+Status: Proposed. Signing method: see [../code-signing.md](../code-signing.md) and ADR-020 (recommendation: NSIS installer signed with an OV certificate; awaiting owner confirmation). No purchase made.
 Date recorded: 2026-11-01
 
 ## Context
