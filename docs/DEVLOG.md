@@ -2,6 +2,25 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-04 SQLCipher / encryption spike
+
+Done
+- Spike code in `tools/spikes/sqlite/` (not shipped; excluded from lint/format). Evidence and recommendation: `docs/adr/ADR-002-sqlcipher-spike.md`.
+- Candidates: `better-sqlite3-multiple-ciphers` 13.0.3 (MIT) viable; `@signalapp/sqlcipher` rejected (AGPL-3.0); `@journeyapps/sqlcipher` rejected (npm blocks win32).
+
+Tests executed (2026-11-01, Windows 11, Node 24.12.0, Electron 45.2.1)
+- Load on Node ABI 137 and Electron ABI 150: OK without a compiler (prebuilt `.node` ships in the npm tarball; no MSVC on this machine).
+- Encryption: header not plain, marker absent from `.db`/WAL, wrong/no key rejected, rekey works. Identical on both ABIs.
+- `safeStorage` (DPAPI) key wrap: OK; sync API deprecated in Electron 45, async API works.
+- Backup container (scrypt + AES-256-GCM carrying the DB key): restore with passphrase only OK; wrong passphrase, 4 bit-flip positions and truncation all rejected; migrations idempotent, tamper detected, failure rolls back.
+- Benchmarks (1M rows): posting p95 1.67 ms plain vs 2.25 ms encrypted; barcode p95 0.013 vs 0.029 ms; bulk insert 15.5 s vs 30.3 s.
+- Crash test: 500 kill iterations, 0 integrity failures.
+- `pnpm typecheck`, `pnpm lint`, `pnpm format`, `pnpm test` (46 passed) still clean.
+
+Not proven
+- Byte-level SQLCipher 4 interoperability (no reference tool); power-loss durability (process kill only); low-end hardware numbers; binary provenance; CI build on clean image.
+- Bug found in spike: a failed `open()` (wrong key) leaked the DB handle and locked the file on Windows; production `open` must close on failure.
+
 ## 2026-11-01 — W1-03 Secure Electron shell
 
 Done

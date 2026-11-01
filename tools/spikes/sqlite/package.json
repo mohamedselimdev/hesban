@@ -1,0 +1,9 @@
+{
+  "name": "hesban-sqlite-spike",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "better-sqlite3-multiple-ciphers": "^13.0.3"
+  }
+}

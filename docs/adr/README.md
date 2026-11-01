@@ -5,7 +5,7 @@ Full context and trade-offs for ADR-001…015 are in [../02-architecture.md](../
 | ADR | Title | Status |
 |---|---|---|
 | 001 | Electron shell | Proposed (Electron major chosen after supported-OS check, ADR-019) |
-| 002 | SQLite + SQLCipher encryption at rest | **Conditionally approved** — spike must prove encryption, key mgmt, backup, restore, migration, performance; no hardcoded keys; failure ⇒ documented-risk review with owner |
+| 002 | SQLite + SQLCipher encryption at rest ([spike evidence](ADR-002-sqlcipher-spike.md)) | **Conditionally approved** (spike done 2026-11-01; recommends `better-sqlite3-multiple-ciphers`) — spike must prove encryption, key mgmt, backup, restore, migration, performance; no hardcoded keys; failure ⇒ documented-risk review with owner |
 | 003 | DB in main process, workers for heavy reads | Proposed |
 | 004 | Kysely + SQL migrations | Proposed |
 | 005 | Integer piastres / thousandths / BigInt | **Approved** (mandatory rule 1) |

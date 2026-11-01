@@ -11,7 +11,17 @@ const bannedSyntax = [
 ];
 
 export default tseslint.config(
-  { ignores: ['node_modules/**', 'dist/**', 'out/**', 'release/**', 'coverage/**', 'docs/**'] },
+  {
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'out/**',
+      'release/**',
+      'coverage/**',
+      'docs/**',
+      'tools/spikes/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
