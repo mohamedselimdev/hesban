@@ -52,17 +52,25 @@ jobs:
       - name: Unit, property, integration and security tests
         run: pnpm test
 
-      - name: Production build and real Electron security probe
+      - name: Domain coverage gate (95% branches, lines, functions, statements)
+        run: pnpm test:coverage
+
+      - name: Real Electron security probe (test-probe build)
         run: pnpm test:electron
 
       - name: Arabic RTL UI check in a real Electron window
         run: pnpm test:ui
 
-      - name: Production build and real Electron security probe (rebuild)
+      - name: Production build
         run: pnpm build
 
-      - name: Build verifier (CSP, preload, fuses)
+      - name: Build verifier (CSP, preload, fuses, no test probes)
         run: pnpm verify:build -- --fuses
+
+      - name: Package unsigned app and verify fuses, asar contents, native binary
+        run: |
+          pnpm package:dir
+          pnpm verify:packaged
 
       - name: Dependency audit
         run: pnpm audit:ci

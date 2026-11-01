@@ -1,49 +1,23 @@
-import { spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import electronPath from 'electron';
+import { buildProbeVariant, root, run } from './helpers';
 
 /**
  * Builds a gallery variant (VITE_GALLERY=1) into out-ui, runs it in a real Electron window and
  * reads the layout/keyboard report. Screenshots are kept in out-ui/screens for human review.
  */
-const root = process.cwd();
 const outDir = join(root, 'out-ui');
 const screens = join(outDir, 'screens');
 let report: Record<string, unknown> = {};
 const scratch = join(tmpdir(), `hesban-ui-${process.pid}`);
 
-function run(command: string, args: string[], env: Record<string, string>, timeoutMs: number) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd: root,
-      env: { ...process.env, ...env },
-      stdio: 'ignore',
-    });
-    const timer = setTimeout(() => {
-      child.kill();
-      reject(new Error(`${command} timed out`));
-    }, timeoutMs);
-    child.on('exit', (code) => {
-      clearTimeout(timer);
-      if (code === 0) resolve();
-      else reject(new Error(`${command} exited with ${code}`));
-    });
-    child.on('error', reject);
-  });
-}
-
 beforeAll(async () => {
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(screens, { recursive: true });
-  await run(
-    process.execPath,
-    [join(root, 'node_modules/electron-vite/bin/electron-vite.js'), 'build'],
-    { HESBAN_OUT_DIR: 'out-ui', VITE_GALLERY: '1' },
-    120_000,
-  );
+  await buildProbeVariant('out-ui', { VITE_GALLERY: '1' });
   await run(
     String(electronPath),
     [join(outDir, 'main/index.js'), `--user-data-dir=${join(scratch, 'data')}`],

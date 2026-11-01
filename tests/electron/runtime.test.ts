@@ -1,40 +1,26 @@
-import { spawn } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import electronPath from 'electron';
+import { buildProbeVariant, root, run } from './helpers';
 
-const root = process.cwd();
 let report: Record<string, unknown> = {};
 let tmp = '';
 
 beforeAll(async () => {
-  expect(existsSync(join(root, 'out/main/index.js')), 'run electron-vite build first').toBe(true);
+  await buildProbeVariant('out-probe');
+  expect(existsSync(join(root, 'out-probe/main/index.js'))).toBe(true);
   tmp = mkdtempSync(join(tmpdir(), 'hesban-selftest-'));
   const out = join(tmp, 'report.json');
-  await new Promise<void>((resolve, reject) => {
-    const child = spawn(String(electronPath), [root, `--user-data-dir=${join(tmp, 'data')}`], {
-      env: {
-        ...process.env,
-        HESBAN_SELFTEST: '1',
-        HESBAN_SELFTEST_OUT: out,
-        ELECTRON_RENDERER_URL: '',
-      },
-      stdio: 'ignore',
-    });
-    const timer = setTimeout(() => {
-      child.kill();
-      reject(new Error('electron self-test timed out'));
-    }, 60_000);
-    child.on('exit', () => {
-      clearTimeout(timer);
-      resolve();
-    });
-    child.on('error', reject);
-  });
+  await run(
+    String(electronPath),
+    [join(root, 'out-probe/main/index.js'), `--user-data-dir=${join(tmp, 'data')}`],
+    { HESBAN_SELFTEST: '1', HESBAN_SELFTEST_OUT: out, ELECTRON_RENDERER_URL: '' },
+    60_000,
+  );
   report = JSON.parse(readFileSync(out, 'utf8')) as Record<string, unknown>;
-}, 90_000);
+}, 240_000);
 
 afterAll(() => {
   if (tmp) rmSync(tmp, { recursive: true, force: true });

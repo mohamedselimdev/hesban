@@ -22,3 +22,4 @@ backups/
 Thumbs.db
 sbom.cdx.json
 out-ui/
+out-probe/

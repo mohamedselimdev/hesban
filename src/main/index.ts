@@ -63,24 +63,28 @@ async function start(): Promise<void> {
   Menu.setApplicationMenu(null);
   const win = createWindow();
 
-  const selfTestOut = process.env['HESBAN_SELFTEST_OUT'];
-  if (process.env['HESBAN_SELFTEST'] === '1' && !app.isPackaged && selfTestOut) {
-    win.webContents.once('did-finish-load', () => {
-      void import('./selftest').then(async ({ runSelfTest }) => {
-        await runSelfTest(win, selfTestOut);
-        app.exit(0);
+  // Test probes exist only in builds made with HESBAN_DEV_PROBES=1. In every other build the
+  // compiler replaces this constant with false and drops the probe code entirely.
+  if (__DEV_PROBES__) {
+    const selfTestOut = process.env['HESBAN_SELFTEST_OUT'];
+    if (process.env['HESBAN_SELFTEST'] === '1' && !app.isPackaged && selfTestOut) {
+      win.webContents.once('did-finish-load', () => {
+        void import('./selftest').then(async ({ runSelfTest }) => {
+          await runSelfTest(win, selfTestOut);
+          app.exit(0);
+        });
       });
-    });
-  }
+    }
 
-  const uiCheckOut = process.env['HESBAN_UICHECK_OUT'];
-  if (process.env['HESBAN_UICHECK'] === '1' && !app.isPackaged && uiCheckOut) {
-    win.webContents.once('did-finish-load', () => {
-      void import('./uicheck').then(async ({ runUiCheck }) => {
-        await runUiCheck(win, uiCheckOut);
-        app.exit(0);
+    const uiCheckOut = process.env['HESBAN_UICHECK_OUT'];
+    if (process.env['HESBAN_UICHECK'] === '1' && !app.isPackaged && uiCheckOut) {
+      win.webContents.once('did-finish-load', () => {
+        void import('./uicheck').then(async ({ runUiCheck }) => {
+          await runUiCheck(win, uiCheckOut);
+          app.exit(0);
+        });
       });
-    });
+    }
   }
 
   app.on('window-all-closed', () => app.quit());

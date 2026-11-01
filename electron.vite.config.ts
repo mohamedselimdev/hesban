@@ -21,6 +21,7 @@ const outRoot = resolve(__dirname, process.env['HESBAN_OUT_DIR'] ?? 'out');
 
 export default defineConfig({
   main: {
+    define: { __DEV_PROBES__: JSON.stringify(process.env['HESBAN_DEV_PROBES'] === '1') },
     build: {
       outDir: resolve(outRoot, 'main'),
       rollupOptions: { input: { index: resolve(__dirname, 'src/main/index.ts') } },

@@ -30,6 +30,23 @@ if (existsSync(html)) {
   }
 }
 
+const mainDir = join(root, 'out/main');
+if (existsSync(mainDir)) {
+  const walk = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)],
+    );
+  for (const file of walk(mainDir)) {
+    if (/selftest|uicheck/i.test(file))
+      problems.push(`test probe chunk in production build: ${file}`);
+    if (!file.endsWith('.js')) continue;
+    const text = readFileSync(file, 'utf8');
+    if (/HESBAN_(SELFTEST|UICHECK|DEV_PROBES)/.test(text)) {
+      problems.push(`test probe code found in ${file}`);
+    }
+  }
+}
+
 const assetsDir = join(root, 'out/renderer/assets');
 if (existsSync(assetsDir)) {
   const names = readdirSync(assetsDir);
