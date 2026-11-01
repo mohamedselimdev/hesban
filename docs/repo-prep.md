@@ -1,6 +1,6 @@
 # Repository preparation (private GitHub repository `hesban`)
 
-Status: PREPARED, NOT PUBLISHED. No remote exists and nothing has been pushed. Creating the repository and pushing need explicit owner approval.
+Status: PUBLISHED as a private repository on 2026-11-01 after owner approval (`mohamedselimdev/hesban`). See DEVLOG for the first CI runs and the branch-protection result.
 
 ## History review (2026-11-01, local repository, branch `main`)
 
@@ -22,7 +22,8 @@ Limit: the scanner is regex-based and weaker than a dedicated tool; secrets in b
 
 - The GitHub token scopes are `gist, read:org, repo, workflow`; the API returned `plan: null`, so the account plan could **not** be read. It is not assumed.
 - GitHub documentation (plans page) lists "Protected branches" and "Required pull request reviewers" under GitHub Pro's advanced tools for private repositories, and describes Free private repositories as having "a limited feature set" without listing them. This suggests Free private repositories cannot enforce protection, but the page does not state it outright.
-- Definitive test (after the repository exists, with approval): `gh api -X PUT repos/<owner>/hesban/branches/main/protection` with a required status check `verify`. An error such as "Upgrade to GitHub Pro or make this repository public" means enforcement is unsupported on the current plan.
+- RESULT (probed 2026-11-01): the API returned HTTP 403 "Upgrade to GitHub Pro or make this repository public to enable this feature." for branch protection and rulesets. Enforcement is NOT available on the current plan.
+- Test that was run: `gh api -X PUT repos/<owner>/hesban/branches/main/protection` with a required status check `verify`. An error such as "Upgrade to GitHub Pro or make this repository public" means enforcement is unsupported on the current plan.
 - If unsupported, fallbacks that are not enforcement: work only through pull requests by convention, run CI on every push, and require green local checks before merge. Upgrading the plan or making the repository public is the owner's decision; nothing will be purchased.
 
 ## Planned steps once approved

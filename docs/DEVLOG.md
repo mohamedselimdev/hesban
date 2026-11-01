@@ -2,6 +2,21 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — Repository published (private) and first CI runs
+
+Done (owner approved creation and push)
+- Created private repo `mohamedselimdev/hesban` (verified `isPrivate: true`), pushed `main`.
+- Run 41331812995 (commit 4ec8c79): **FAILED** at "Format check". Cause: the Windows runner checks files out with CRLF while Prettier expects LF (51 files flagged). Fixed by adding `.gitattributes` (`* text=auto eol=lf`, binary rules for png/woff) in commit 72d7a55.
+- Run 41331953035 (commit 72d7a55): **PASSED**, 1m44s. Every step green: install, secret scan, doc links, lint, typecheck, format, tests, Electron security probe, Arabic RTL UI check (real window on the runner), build verifier with fuses, dependency audit, SBOM, SBOM upload.
+
+Branch protection (probed with the real API, 2026-11-01)
+- `PUT /branches/main/protection`, `GET /rulesets` and `GET /branches/main/protection` all returned HTTP 403: "Upgrade to GitHub Pro or make this repository public to enable this feature." Enforced protection and rulesets are NOT available for this private repository on the current plan. No settings were changed.
+- Consequence: CI runs on every push but cannot block merges. Use pull requests and green CI by convention until the owner decides on a plan change or visibility change (not done, nothing purchased).
+
+Notes
+- The first push included the root commit wording noted in `docs/repo-prep.md` (history not rewritten, per no instruction to rewrite).
+- The pushed history is now public to GitHub's servers (private repo); rewriting later would need a force-push.
+
 ## 2026-11-01 — W1-10 ADRs finalised, documents reconciled
 
 Done
