@@ -1,6 +1,6 @@
 # ADR-004 — Query layer: hand-written SQL migrations, Kysely for typed queries
 
-Status: Proposed — migration runner implemented with plain SQL files (W1-05); Kysely not yet adopted.
+Status: Proposed — Week 2 gate result: **do not adopt Kysely yet**; use plain prepared statements with typed row interfaces (W2-02). Revisit at the Week 4 re-baseline when the first multi-table posting queries exist.
 Date recorded: 2026-11-01
 
 ## Context

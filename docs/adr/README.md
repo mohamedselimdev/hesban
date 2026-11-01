@@ -9,7 +9,7 @@ Status vocabulary: **Accepted/Approved** = decided; **Conditionally approved** =
 | [001](ADR-001-electron-shell.md) | Electron shell | Accepted (Electron 45.2.1); Windows 10 unverified |
 | [002](ADR-002-sqlcipher-spike.md) | SQLite encryption at rest | **Conditionally approved**; spike done, recommends `better-sqlite3-multiple-ciphers` in SQLCipher mode |
 | [003](ADR-003-db-in-main-process.md) | DB in main process, workers for heavy reads | Proposed |
-| [004](ADR-004-query-layer.md) | Query layer (SQL migrations; Kysely) | Proposed; migrations implemented, Kysely undecided |
+| [004](ADR-004-query-layer.md) | Query layer (SQL migrations; Kysely) | Proposed; migrations implemented; Kysely deferred (decision at Week 4) |
 | [005](ADR-005-money-and-quantity.md) | Integer money/quantity, BigInt | Approved, implemented |
 | [006](ADR-006-double-entry-accounting.md) | Internal double-entry accounting | Approved (D-01); accountant gate before Week 4 |
 | [007](ADR-007-immutability-and-costing-order.md) | Immutability, reversals, costing order | Approved (D-04) |
