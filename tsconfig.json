@@ -16,6 +16,8 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "erasableSyntaxOnly": true,
     "types": ["node"],
     "paths": {
       "better-sqlite3-multiple-ciphers": [
@@ -23,5 +25,5 @@
       ]
     }
   },
-  "include": ["src", "tests", "*.config.ts", "*.config.js"]
+  "include": ["src", "tests", "tools/*.ts", "*.config.ts", "*.config.js"]
 }

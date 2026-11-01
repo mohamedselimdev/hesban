@@ -2,6 +2,28 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-07 CI (workflow written and every step run locally; NOT yet run on GitHub)
+
+Done
+- `.github/workflows/ci.yml`: windows-latest, `permissions: contents: read`, concurrency cancel, 25 min timeout. Actions pinned to commit SHAs (checkout v7.0.1, setup-node v7.1.0, pnpm/action-setup v6.1.0, upload-artifact v7.0.2; SHAs resolved from the upstream tags on 2026-11-01). Steps: frozen-lockfile install, secret scan, lint, typecheck, format, tests, production build + real Electron probe, build verifier with fuses, dependency audit, SBOM (CycloneDX) uploaded as artifact.
+- `tools/scan-secrets.ts` (own scanner, no third-party action): known token shapes, private keys, secret/key assignments, 64-hex key literals; refuses tracked `.db/.key/.pem/.pfx/.hbk/.env*`; `secret-scan:allow` marker; unit tests in `tests/security/secret-scan.test.ts`.
+- `package.json`: `packageManager` pnpm@12.16.1, scripts `scan:secrets`, `audit:ci`, `sbom:generate`. `tsconfig.json`: `allowImportingTsExtensions`, `erasableSyntaxOnly`, includes `tools/*.ts`.
+
+Run locally on 2026-11-01 (same commands as the workflow)
+- `pnpm scan:secrets` OK (69 text files); planted fake key assignment in an untracked file → FAILED as intended; force-added `leak.db` → FAILED as intended; both removed, clean again.
+- `pnpm lint`, `pnpm typecheck`, `pnpm format` clean. `pnpm test`: 6 files, 70 tests passed. `pnpm test:electron`: 7 passed. `pnpm verify:build -- --fuses`: OK. `pnpm audit:ci`: exit 0. `pnpm run sbom:generate`: 417 KB CycloneDX file produced (git-ignored).
+
+Findings
+- `pnpm audit` reports 1 moderate advisory (minimatch DoS, GHSA-g3hv-75wg-m249) reachable only through dev tooling (eslint, electron-builder), not shipped code. `audit:ci` fails on any `--prod` advisory and on high/critical anywhere; this moderate is accepted for now and must be re-checked when tooling updates.
+- `pnpm audit signatures`: 465 packages with verified registry signatures.
+- `pnpm sbom` is a built-in command, so the script is named `sbom:generate`.
+
+Not done / not verified
+- No GitHub remote exists, so the workflow has never executed on GitHub and branch protection is not set. `actionlint` is not installed; YAML only passed Prettier parsing.
+- Fuses are still verified on a copy of electron.exe, not on a packaged installer.
+- The secret scanner is regex-based and weaker than gitleaks; it does not scan git history (a fresh repository has one local history only).
+- Branch protection command for later (after the private repo exists): `gh api -X PUT repos/<owner>/<repo>/branches/main/protection` with required status check `verify`, required PR reviews as chosen, force-push and deletion disabled.
+
 ## 2026-11-01 — W1-05 Migration runner
 
 Done
