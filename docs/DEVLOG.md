@@ -2,6 +2,27 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-03 Secure Electron shell
+
+Done
+- Electron 45.2.1, electron-vite 6.0.0, Vite 8.3.5, React 19, @electron/fuses 2.1.3. pnpm build script allowed only for `electron` (`pnpm-workspace.yaml`); `electron-winstaller` denied.
+- Main: `src/main/index.ts`, `security.ts`, `csp.ts`, `ipc/registry.ts`, `ipc/handlers.ts`, `selftest.ts` (dev/test only, refused when packaged). Preload: `src/preload/api.ts`, `index.ts`. Contract: `src/shared/contracts/ipc.ts`. Renderer: `src/renderer/*`. Tools: `tools/fuses.mjs`, `tools/verify-build.mjs`.
+- Enforced: contextIsolation, sandbox, nodeIntegration off, webSecurity, no webview, devTools off when packaged, strict production CSP (meta tag), closed zod-validated channel list, sender URL + main-frame check, permission check in registry, response schema check, navigation/window-open/webview blocks, all permissions denied, single-instance lock.
+
+Tests executed (2026-11-01)
+- `pnpm typecheck`, `pnpm lint`, `pnpm format`: clean.
+- `pnpm test`: 4 files, 46 tests passed (24 existing Money/Qty + 22 new security unit tests).
+- `pnpm test:electron` (production build + real Electron process): 1 file, 7 tests passed. Raw probe: no require/process/module/ipcRenderer in page; only frozen `hesban.system.ping`; IPC round trip ok; eval and inline script blocked by CSP; window.open null; navigation to https://example.com blocked; one window; geolocation denied; notifications denied.
+- `node tools/verify-build.mjs --fuses`: OK. Stock Electron copy had 7 fuse violations; after applying `tools/fuses.mjs` 0.
+
+Findings / risks
+- Fuses verified on a temp copy of electron.exe only; NOT yet applied in a packaged build (needs electron-builder afterPack hook, W1-07/Week 14).
+- Renderer loads via file://; trust is the exact index.html path. A custom app:// protocol would be stricter; consider in Week 13.
+- DevTools disabled only via webPreferences when packaged; menu removed; no explicit shortcut block.
+- Sandbox confirmed indirectly (no Node globals in page); no direct `process.sandboxed` assertion.
+- Dev-mode CSP allows unsafe-inline (Vite HMR); production CSP has none. `electron-vite dev` not exercised.
+- Not tested: packaged installer, ASAR integrity, Windows 10.
+
 ## 2026-11-01 — Week 1 start: W1-01, W1-02 (partial), W1-06
 
 Done

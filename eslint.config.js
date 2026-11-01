@@ -20,6 +20,10 @@ export default tseslint.config(
     },
   },
   {
+    files: ['tools/**/*.mjs'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
+  },
+  {
     // Domain layer is pure: no I/O, no framework, no outer layers.
     files: ['src/domain/**/*.ts'],
     rules: {
