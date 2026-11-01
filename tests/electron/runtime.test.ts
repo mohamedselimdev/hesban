@@ -38,10 +38,34 @@ describe('real Electron renderer (built app)', () => {
     expect(report['typeofIpcRenderer']).toBe('undefined');
   });
 
-  it('exposes only the frozen window.hesban.system.ping bridge', () => {
-    expect(report['apiKeys']).toEqual(['system']);
+  it('exposes only the declared frozen window.hesban groups', () => {
+    expect(report['apiKeys']).toEqual(['system', 'auth', 'users', 'audit']);
     expect(report['systemKeys']).toEqual(['ping']);
     expect(report['apiFrozen']).toBe(true);
+  });
+
+  it('runs the full sign-in and permission flow over the real IPC and the real encrypted database', () => {
+    expect(report['authFlowError']).toBeUndefined();
+    expect(report['authFlow']).toEqual({
+      apiGroups: ['audit', 'auth', 'system', 'users'],
+      statusBefore: { hasUsers: false, user: null },
+      listWithoutLogin: 'UNAUTHENTICATED',
+      setupOk: true,
+      recoveryKeyShape: true,
+      statusAfterSetup: 'owner',
+      createCashier: true,
+      statusAfterLogout: null,
+      wrongLogin: 'INVALID_CREDENTIALS',
+      pinLogin: true,
+      cashierCreateUser: 'FORBIDDEN',
+      cashierListUsers: 'FORBIDDEN',
+      cashierAudit: 'FORBIDDEN',
+      userCount: 2,
+      noHashesInList: true,
+      auditChainOk: true,
+      auditRows: expect.any(Number),
+    });
+    expect((report['authFlow'] as { auditRows: number }).auditRows).toBeGreaterThanOrEqual(6);
   });
 
   it('completes a real IPC round trip through validation', () => {

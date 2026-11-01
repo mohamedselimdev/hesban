@@ -1,6 +1,6 @@
 # ADR-022 — Authentication, sessions and authorisation
 
-Status: Accepted for v1 (W2-03, 2026-11-01). Mechanisms implemented and tested; UI and IPC wiring follow in W2-04.
+Status: Accepted for v1 (W2-03/W2-04, 2026-11-01). Implemented, wired through IPC and the main process, and exercised in a real Electron process; minimal Arabic sign-in screens exist.
 
 ## Context
 Local users on a shop PC, no internet. Threats: dishonest cashier, shared PINs, brute force at the keyboard, offline guessing if the database file is copied, a compromised renderer. Requirements AUTH-01…05, SEC-04, mandatory rules 6, 8, 11.

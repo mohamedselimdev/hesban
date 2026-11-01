@@ -105,3 +105,26 @@ h2 {
   text-align: end;
   font-variant-numeric: tabular-nums;
 }
+
+.auth-card {
+  max-inline-size: 460px;
+  margin: var(--space-6) auto;
+  padding: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.auth-card form > div {
+  margin-block-end: var(--space-3);
+}
+
+.recovery-key {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 1.25rem;
+  letter-spacing: 0.08em;
+  padding: var(--space-3);
+  background: var(--bg);
+  border-radius: var(--radius);
+  user-select: all;
+}

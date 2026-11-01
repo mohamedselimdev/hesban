@@ -1,9 +1,12 @@
+import { authStrings } from './auth-strings';
+
 /**
  * Arabic UI strings. v1 ships Arabic only; strings live here, never inline in components,
  * so a second language or wording review needs no component changes.
  */
 export const ar = {
   appName: 'حسبان',
+  auth: authStrings,
   gallery: {
     title: 'معرض المكوّنات',
     digitStyle: 'شكل الأرقام',

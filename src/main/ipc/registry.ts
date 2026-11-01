@@ -17,21 +17,31 @@ export interface Actor {
 /** Minimal shape of an Electron IPC invoke event that the registry depends on. */
 export interface IpcEventLike {
   readonly senderUrl: string | undefined;
+  /** Id of the window that sent the call; sessions are bound to it. */
+  readonly senderId?: number | undefined;
 }
 
 export interface RegistryDeps {
   isTrustedSender(url: string | undefined): boolean;
   getActor(event: IpcEventLike): Actor | null;
   log(entry: { channel: string; code: IpcErrorCode; correlationId: string; detail?: string }): void;
+  /** Called when a trusted window is refused for lack of login or permission. */
+  onDenied?(info: {
+    channel: string;
+    code: 'UNAUTHENTICATED' | 'FORBIDDEN';
+    senderId: number;
+  }): void;
 }
 
 export interface HandlerDefinition<C extends ChannelName> {
   readonly channel: C;
   /** null = public channel (no login needed). Otherwise the permission the actor must hold. */
   readonly permission: string | null;
+  /** True for channels that need a signed-in user but no specific permission. */
+  readonly requireLogin?: boolean;
   readonly handler: (
     input: RequestOf<C>,
-    ctx: { actor: Actor | null },
+    ctx: { actor: Actor | null; senderId: number },
   ) => Promise<ResponseOf<C>> | ResponseOf<C>;
 }
 
@@ -44,7 +54,11 @@ export function defineHandler<C extends ChannelName>(
 interface StoredHandler {
   readonly channel: ChannelName;
   readonly permission: string | null;
-  readonly run: (input: unknown, ctx: { actor: Actor | null }) => Promise<unknown>;
+  readonly requireLogin: boolean;
+  readonly run: (
+    input: unknown,
+    ctx: { actor: Actor | null; senderId: number },
+  ) => Promise<unknown>;
 }
 
 export interface IpcMainLike<E> {
@@ -76,6 +90,7 @@ export function createIpcRegistry(deps: RegistryDeps) {
       handlers.set(channel, {
         channel: definition.channel,
         permission: definition.permission,
+        requireLogin: definition.requireLogin ?? false,
         run: async (input, ctx) => definition.handler(input as RequestOf<C>, ctx),
       });
     },
@@ -107,13 +122,20 @@ export function createIpcRegistry(deps: RegistryDeps) {
       if (!parsed.success) return fail(channel, 'INVALID_INPUT');
 
       const actor = deps.getActor(event);
-      if (stored.permission !== null) {
-        if (!actor) return fail(channel, 'UNAUTHENTICATED');
-        if (!actor.permissions.has(stored.permission)) return fail(channel, 'FORBIDDEN');
+      const senderId = event.senderId ?? -1;
+      if (stored.permission !== null || stored.requireLogin) {
+        if (!actor) {
+          deps.onDenied?.({ channel, code: 'UNAUTHENTICATED', senderId });
+          return fail(channel, 'UNAUTHENTICATED');
+        }
+        if (stored.permission !== null && !actor.permissions.has(stored.permission)) {
+          deps.onDenied?.({ channel, code: 'FORBIDDEN', senderId });
+          return fail(channel, 'FORBIDDEN');
+        }
       }
 
       try {
-        const output = await stored.run(parsed.data, { actor });
+        const output = await stored.run(parsed.data, { actor, senderId });
         const checked = contract.response.safeParse(output);
         if (!checked.success) return fail(channel, 'INTERNAL', 'response failed schema');
         return { ok: true, data: checked.data };
@@ -122,12 +144,16 @@ export function createIpcRegistry(deps: RegistryDeps) {
       }
     },
 
-    /** Binds every registered handler to ipcMain.handle. Event is reduced to its sender URL. */
-    install<E>(ipcMain: IpcMainLike<E>, extractSenderUrl: (event: E) => string | undefined): void {
+    /** Binds every registered handler to ipcMain.handle. The event is reduced to url and window id. */
+    install<E>(
+      ipcMain: IpcMainLike<E>,
+      extractSender: (event: E) => { url: string | undefined; id: number },
+    ): void {
       for (const channel of handlers.keys()) {
-        ipcMain.handle(channel, (event: E, payload: unknown) =>
-          this.invoke(channel, { senderUrl: extractSenderUrl(event) }, payload),
-        );
+        ipcMain.handle(channel, (event: E, payload: unknown) => {
+          const sender = extractSender(event);
+          return this.invoke(channel, { senderUrl: sender.url, senderId: sender.id }, payload);
+        });
       }
     },
   };

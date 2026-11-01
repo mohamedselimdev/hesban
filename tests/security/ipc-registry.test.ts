@@ -17,10 +17,11 @@ function build(actor: Actor | null = null) {
 }
 
 describe('ipc registry', () => {
-  it('registers exactly the contract channels, no more and no fewer', () => {
+  it('registers only what it was given and refuses to start while contract channels lack a handler', () => {
     const { registry } = build();
-    expect(registry.channels()).toEqual([...channelNames].sort());
-    expect(() => registry.assertComplete()).not.toThrow();
+    expect(registry.channels()).toEqual(['system:ping']);
+    expect(() => registry.assertComplete()).toThrow(/without handler/);
+    expect(channelNames).toContain('system:ping');
   });
 
   it('refuses a duplicate registration', () => {
@@ -170,7 +171,7 @@ describe('ipc registry', () => {
     const bound = new Map<string, (event: { url?: string }, payload: unknown) => unknown>();
     registry.install(
       { handle: (channel, listener) => void bound.set(channel, listener) },
-      (event: { url?: string }) => event.url,
+      (event: { url?: string }) => ({ url: event.url, id: 1 }),
     );
     expect([...bound.keys()]).toEqual(['system:ping']);
     const ok = await bound.get('system:ping')?.({ url: TRUSTED }, { nonce: 'n' });

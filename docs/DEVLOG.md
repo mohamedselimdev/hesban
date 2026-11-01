@@ -2,6 +2,25 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W2-04 IPC authentication wiring, main-process database, sign-in screens
+
+Done (branch `w2-04-ipc-auth-wiring`)
+- IPC contract extended to 14 channels (auth status/setup/login/PIN login/logout/change-password, users list/create/reset-password/set-role/deactivate, audit verify) with strict request and response schemas (no key can leak: responses are schema-checked). Registry: `requireLogin`, sender window id, `onDenied` hook; refusals are audited as `permission.denied` with the actor id and channel.
+- Main process now opens the encrypted database in the user-data folder at start (DPAPI key via async safeStorage), creates sessions/auth service, registers all handlers, closes the DB on quit. Startup failure shows an Arabic error box with a stable code only. Sessions are bound to the window id and ended when it closes; role change, reset and deactivation revoke the user's sessions.
+- Default pre-migration safety copy (encrypted file copy after WAL checkpoint, newest 3 kept) until the real backup module exists.
+- Preload exposes frozen groups `system`, `auth`, `users`, `audit` only. Minimal Arabic first-run setup (with one-time recovery key screen), login and signed-in screens.
+- `selftest` probe now runs the whole flow over the real IPC.
+
+Tests executed (2026-11-01)
+- typecheck, lint, format, docs:links, scan:secrets clean. `pnpm test`: 213 passed (198 + 15 new: IPC authorisation matrix, window-bound sessions, session revocation, last owner through IPC, malformed payloads, hash/recovery leakage check, lockout over IPC, safety-copy retention, new preload surface). Coverage gate 98.82% branches (src/domain).
+- `pnpm test:electron` (real Electron, real DPAPI, real encrypted DB): 9 passed, including the full flow: status before setup, UNAUTHENTICATED without login, setup + recovery key, owner creates cashier, wrong login, PIN login, cashier FORBIDDEN on create/list/audit, audit chain verifies.
+- `pnpm test:ui` 12 passed; `verify:build -- --fuses` OK; packaged build verified (`verify:packaged` OK) and the packaged app was started for 12 s: it created `hesban.db` (header not plain SQLite) and `db.key.enc` in its user-data folder, so the native SQLite module loads from the unpacked asar and DPAPI works in the packaged build.
+
+My own mistakes this task (reported): a failed shell heredoc left a partial state (corrected by rewriting the file), the scanner flagged fake probe passwords (moved into named constants), a regex lost its backslashes through shell quoting (fixed), an off-by-one expectation on audit row counts.
+
+Not proven
+- No UI automation of the new screens (only IPC-level and flow-level checks); the sign-in screens have not been screenshot-reviewed. Concurrent windows, idle expiry in the running app, and low-end-PC login time are untested. Recovery-key reset and PIN login have no UI yet. DPAPI portability to another Windows user is untested.
+
 ## 2026-11-01 — W2-03 Authentication, sessions, RBAC (service layer; IPC wiring is W2-04)
 
 Done (branch `w2-03-auth-rbac`; ADR-022)

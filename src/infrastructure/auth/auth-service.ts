@@ -19,7 +19,8 @@ import {
 
 export interface Actor {
   readonly userId: number;
-  readonly role: Role;
+  /** Ignored for authorisation: the service always re-reads the role from the database. */
+  readonly role?: Role;
 }
 
 export interface PublicUser {
@@ -277,7 +278,13 @@ export function createAuthService(options: AuthOptions) {
 
     async createUser(
       actor: Actor,
-      input: { username: string; displayName: string; role: Role; password: string; pin?: string },
+      input: {
+        username: string;
+        displayName: string;
+        role: Role;
+        password: string;
+        pin?: string | undefined;
+      },
     ): Promise<AuthResult<PublicUser>> {
       if (!requirePermission(actor, 'users.manage')) return fail({ error: 'FORBIDDEN' });
       if (!isRole(input.role)) return fail({ error: 'INVALID_ROLE' });
@@ -483,6 +490,12 @@ export function createAuthService(options: AuthOptions) {
         audit('recovery.used', (owner as UserRow).id, String((owner as UserRow).id));
       })();
       return ok({ recoveryKey });
+    },
+
+    listUsers(actor: Actor): AuthResult<Array<PublicUser & { isActive: boolean }>> {
+      if (!requirePermission(actor, 'users.manage')) return fail({ error: 'FORBIDDEN' });
+      const rows = db.prepare('select * from users order by id').all() as UserRow[];
+      return ok(rows.map((r) => ({ ...publicUser(r), isActive: r.is_active === 1 })));
     },
 
     getUser(id: number): PublicUser | null {
