@@ -16,14 +16,19 @@ function productionCsp(): Plugin {
   };
 }
 
+// UI checks build a second variant (with the component gallery) into another folder.
+const outRoot = resolve(__dirname, process.env['HESBAN_OUT_DIR'] ?? 'out');
+
 export default defineConfig({
   main: {
     build: {
+      outDir: resolve(outRoot, 'main'),
       rollupOptions: { input: { index: resolve(__dirname, 'src/main/index.ts') } },
     },
   },
   preload: {
     build: {
+      outDir: resolve(outRoot, 'preload'),
       rollupOptions: {
         input: { index: resolve(__dirname, 'src/preload/index.ts') },
         output: { format: 'cjs', entryFileNames: '[name].cjs' },
@@ -34,6 +39,8 @@ export default defineConfig({
     root: resolve(__dirname, 'src/renderer'),
     plugins: [react(), productionCsp()],
     build: {
+      outDir: resolve(outRoot, 'renderer'),
+      emptyOutDir: true,
       rollupOptions: { input: resolve(__dirname, 'src/renderer/index.html') },
     },
   },

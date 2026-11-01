@@ -2,6 +2,28 @@
 
 Format: newest first. Each entry: what was done, decisions, tests actually executed (command + result), risks, next steps. Untested items are labelled "not tested".
 
+## 2026-11-01 — W1-08 Arabic RTL, typography, numbers, keyboard, responsive
+
+Done
+- Cairo (OFL-1.1) bundled via `@fontsource/cairo` 5.3.0; logical-property CSS (`src/renderer/styles/`); `ui/Money.tsx`, `ui/DataGrid.tsx` (roving tabindex, direction-aware arrows); `i18n/format.ts` (grouping, digit styles, Cairo dates, UTC offset helper); `i18n/ar.ts` typed dictionary; gallery page `spike/Gallery.tsx` (build-time flag `VITE_GALLERY=1`); dev-only probe `src/main/uicheck.ts`; configurable output folder (`HESBAN_OUT_DIR`) in `electron.vite.config.ts`.
+- Details and decisions: `docs/adr/ADR-009-renderer-ui-rtl.md`. Screenshots: `docs/visual/w1-08/`.
+
+Tests executed (2026-11-01)
+- `pnpm typecheck`, `pnpm lint`, `pnpm format`, `pnpm scan:secrets`: clean. `pnpm test`: 7 files, 84 tests passed (65 earlier + 14 formatting/date/dictionary + 5 secret scanner). `pnpm test:electron`: 7 passed. `pnpm test:ui`: 12 passed (real Electron, 5 viewports, real key events). `pnpm verify:build -- --fuses`: OK.
+
+Defects found and fixed during the task (reported, not hidden)
+- First UI run: gallery did not render because the app read the URL hash only once; fixed with a `hashchange` subscription.
+- `electron-vite build --outDir` moved only main/preload (renderer went to `src/renderer/out-ui`); replaced by a `HESBAN_OUT_DIR` config variable. Stray folders deleted.
+- My own test bug: a loop bound in the DST-window test was one day short; corrected (code was right).
+- **Production bundle shipped the gallery chunk.** `import.meta.env['VITE_GALLERY']` (bracket access) is not replaced at build time, so the lazy chunk was emitted. Caught by the new `verify-build` check; fixed by using `import.meta.env.VITE_GALLERY`. Production build now has no gallery chunk or markup.
+- One screenshot assertion failed once because the screenshot call was never added (edit did not apply); fixed and rerun.
+
+Findings / open
+- Amount columns align to the end edge (left in RTL). Needs owner confirmation with a pilot user.
+- The Arabic strings dictionary is bundled whole (gallery labels included) because object properties are not tree-shaken; harmless but noted.
+- The `pnpm test:ui` CI step has not run on GitHub (no remote yet); it needs a desktop session on the runner.
+- Not tested: >125% scaling, IME, screen readers, pixel-diff regression.
+
 ## 2026-11-01 — W1-07 CI (workflow written and every step run locally; NOT yet run on GitHub)
 
 Done

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import type { HesbanApi } from '../preload/api';
 
 declare global {
@@ -5,5 +6,3 @@ declare global {
     readonly hesban: HesbanApi;
   }
 }
-
-export {};

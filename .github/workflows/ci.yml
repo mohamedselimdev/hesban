@@ -52,6 +52,12 @@ jobs:
       - name: Production build and real Electron security probe
         run: pnpm test:electron
 
+      - name: Arabic RTL UI check in a real Electron window
+        run: pnpm test:ui
+
+      - name: Production build and real Electron security probe (rebuild)
+        run: pnpm build
+
       - name: Build verifier (CSP, preload, fuses)
         run: pnpm verify:build -- --fuses
 

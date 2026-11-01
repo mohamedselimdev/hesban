@@ -1,0 +1,107 @@
+:root {
+  --font: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #1a2027;
+  --muted: #55606c;
+  --border: #ccd3da;
+  --accent: #0b6b5d;
+  --accent-contrast: #ffffff;
+  --danger: #b3261e;
+  --focus: #1456c8;
+  --radius: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --fs-body: 16px;
+  --fs-table: 15px;
+  --control-height: 44px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  min-block-size: var(--control-height);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+input {
+  min-block-size: var(--control-height);
+  inline-size: 100%;
+  padding-inline: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+label {
+  display: block;
+  margin-block-end: var(--space-1);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+h1,
+h2 {
+  margin: 0 0 var(--space-3);
+}
+
+.error {
+  color: var(--danger);
+  min-block-size: 1.6em;
+}
+
+.ltr-field {
+  direction: ltr;
+  text-align: start;
+}
+
+.num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}

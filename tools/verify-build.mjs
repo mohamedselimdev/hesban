@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { applyFuses, findFuseViolations } from './fuses.mjs';
@@ -27,6 +27,24 @@ if (existsSync(html)) {
   if (/<script(?![^>]*\bsrc=)[^>]*>/.test(text)) problems.push('inline script found in index.html');
   if (/https?:\/\//.test(text.replace(/<meta[^>]*>/g, ''))) {
     problems.push('external URL referenced from index.html');
+  }
+}
+
+const assetsDir = join(root, 'out/renderer/assets');
+if (existsSync(assetsDir)) {
+  const names = readdirSync(assetsDir);
+  if (names.some((n) => /^Gallery-/.test(n))) {
+    problems.push('component gallery chunk present in production build');
+  }
+  if (!names.some((n) => /^cairo-arabic-400-normal.*\.woff2$/.test(n))) {
+    problems.push('bundled Cairo Arabic font missing');
+  }
+  for (const name of names.filter((n) => /\.(css|js)$/.test(n))) {
+    const text = readFileSync(join(assetsDir, name), 'utf8');
+    if (text.includes('invoice-total')) problems.push(`gallery markup found in ${name}`);
+    if (name.endsWith('.css') && /https?:\/\/(?!www\.w3\.org)/.test(text)) {
+      problems.push(`external URL in stylesheet ${name}`);
+    }
   }
 }
 

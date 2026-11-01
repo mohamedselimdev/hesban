@@ -73,6 +73,16 @@ async function start(): Promise<void> {
     });
   }
 
+  const uiCheckOut = process.env['HESBAN_UICHECK_OUT'];
+  if (process.env['HESBAN_UICHECK'] === '1' && !app.isPackaged && uiCheckOut) {
+    win.webContents.once('did-finish-load', () => {
+      void import('./uicheck').then(async ({ runUiCheck }) => {
+        await runUiCheck(win, uiCheckOut);
+        app.exit(0);
+      });
+    });
+  }
+
   app.on('window-all-closed', () => app.quit());
 }
 

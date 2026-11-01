@@ -21,3 +21,4 @@ backups/
 .DS_Store
 Thumbs.db
 sbom.cdx.json
+out-ui/
